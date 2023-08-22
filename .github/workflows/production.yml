@@ -102,4 +102,5 @@ jobs:
           service: ${{ env.REPOSITORY_NAME }}
           image: ${{ env.DEPLOYMENT_CONTAINER_IMAGE }}
           region: us-west1
+          flags: '--port=80'
 

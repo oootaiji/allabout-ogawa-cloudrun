@@ -31,6 +31,7 @@ jobs:
             APP_KEY: ${{ secrets.PRO_APP_KEY }}
             APP_ENV_NAME: ".env.prd"
             COMPOSER_INSTALL_NO_DEV: "false"
+            APP_URL: https://allabout-ogawa-cloudrun-q3kkj36qnq-uw.a.run.app/
       
 
       - name: wait for phpunit

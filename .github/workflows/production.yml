@@ -82,7 +82,7 @@ jobs:
           file: cd/${{ secrets.PRO_APP_ENV }}/php/Dockerfile
           build-args: |
             APP_ENV=${{ secrets.PRO_APP_ENV }}
-            APP_PATH=/var/www/${{ env.REPOSITORY_NAME }}
+            APP_PATH=/var/www/app
           tags: |
             us-west1-docker.pkg.dev/o-taiji/${{ env.REPOSITORY_NAME }}/app:latest
             us-west1-docker.pkg.dev/o-taiji/${{ env.REPOSITORY_NAME }}/app:${{ env.IMAGE_TAG }}

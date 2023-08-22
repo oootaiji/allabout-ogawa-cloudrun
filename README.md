@@ -32,6 +32,7 @@ https://github.com/oootaiji/allabout-ogawa-cloudrun/blob/main/CloudRunを学習.
     - やらない
         - VPC (ネットワーク設計)
         - 運用設計・運用方針
+        - 独自ドメイン連携
 - リポジトリ管理
     - Github
 - CI/CD
@@ -42,26 +43,22 @@ https://github.com/oootaiji/allabout-ogawa-cloudrun/blob/main/CloudRunを学習.
 
 
 
-## 手動デプロイ
-### SendGridの準備
-- SendGridのSender Authenticationを設定
-    - チュートリアルどおりに設定する
+## デプロイ
+### 1. コンテナレジストリの作成
+- gcrの認証 (us-west1)
+    ```
+    gcloud auth configure-docker us-west1-docker.pkg.dev
+    ```
+
+- gcr作成
+
+    ```
+    repo_name=allabout-ogawa-cloudrun
+    gcloud artifacts repositories create $repo_name --location=us-west1
+    ```
 
 
-### デプロイ (Cloud Console)
-- cloudrun作成
-    - 名前は `allabout-ogawa-cloudrun` にする
-    - 未承認呼び出しを許可を選択 (内部的なAPIではなく、公開APIにする)
-    - ランタイム環境変数にSendGridのAPIキーを設定
-    - コードを作成
-- デプロイ
-- デプロイ確認
-    - https://hoge.com/allabout-ogawa-cloudrun/関数名
-
-
-
-## デプロイ自動化
-### 1. サービスアカウント(権限)JSONの作成
+### 2. サービスアカウント(権限)JSONの作成
 - IAMでサービスアカウントを作成 (運用方針は定義してないのでこだわらない。すぐ削除する)
     - 以下の3つのロールを入れておく
         - Cloud Run (とりあえず管理者でOK)
@@ -72,16 +69,14 @@ https://github.com/oootaiji/allabout-ogawa-cloudrun/blob/main/CloudRunを学習.
     - Workload Identityを作成
     - Service Accountに紐付ける
 
-### 2. Github Actionsのyamlを作成
+### 3. Github Actionsのyamlを作成
 - .github/workflows/workflow.yml作成
 - Githubに環境変数を設定 (config.yamlで使う環境変数を登録)
     - アプリで使う環境変数
-    - サービスアカウントJSON
 
-
-### 3. デプロイ
-1. 手動デプロイは済ませておく
-    1. 「未承認呼び出しを許可」は後で設定を変えられないので注意
+### 4. デプロイ
+1. 必要とあれば手動デプロイは済ませておく
+    1. 「未承認呼び出しを許可」は後で設定を変えられないので許可しておく
 2. mainへpush
 3. デプロイ確認
     1. Actionsのworkflowが動く
@@ -89,10 +84,12 @@ https://github.com/oootaiji/allabout-ogawa-cloudrun/blob/main/CloudRunを学習.
     3. ブラウザにてアプリ稼働確認
 
 
-## 注意
-- allow-authenticatedは、変更不可。はじめのデプロイで設定しておく必要がある
-- GKEと同じで最初デプロイしている状態からCICDを始める
-- actionsにcloud run deployのライブラリがある
+## 注意・詰まった部分
+- `--allow-authenticated` は、変更不可。最初のデプロイで設定しておく必要がある
+    - 変更不可設定があるので、GKEと同じで最初デプロイしている状態からCICDを始めたほうがいい
+- actionsにcloud run deployのライブラリがあるので使うと楽
+- デフォルトportは80ではなく、8080になっている。パラメータでportを指定することもできる
+
 
 ## 参考
 - [チュートリアル](https://cloud.google.com/run/docs/tutorials?hl=ja)
